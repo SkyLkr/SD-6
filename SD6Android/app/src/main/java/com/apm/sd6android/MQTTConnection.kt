@@ -12,18 +12,19 @@ import java.lang.Exception
 class MQTTConnection {
     private lateinit var mqttAndroidClient: MqttAndroidClient
 
-    fun connect(context: Context) {
-        mqttAndroidClient = MqttAndroidClient(context.applicationContext, "localhost", "clientId")
+    fun connect(context: Context, brokerIp: String, callback: (success: Boolean) -> Unit) {
+        mqttAndroidClient = MqttAndroidClient(context.applicationContext, "tcp://$brokerIp:1883", "AndroidClient")
 
         try {
             val token = mqttAndroidClient.connect()
             token.actionCallback = object : IMqttActionListener {
                 override fun onSuccess(asyncActionToken: IMqttToken?) {
+                    callback(true)
                     Log.i("Connection", "sucess ")
-
                 }
 
                 override fun onFailure(asyncActionToken: IMqttToken?, exception: Throwable?) {
+                    callback(false)
                     Log.i("Connection", "faliure ")
                     exception?.printStackTrace()
                 }
